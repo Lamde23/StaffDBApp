@@ -1,0 +1,6 @@
+@StaffDBApi_HostAddress = http://localhost:5263
+
+GET {{StaffDBApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

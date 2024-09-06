@@ -1,0 +1,106 @@
+﻿@page "/"
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+
+<PageTitle>Home</PageTitle>
+
+<h1>Please use the side nav-buttons to view projects</h1>
+
+<p>
+	<button @onclick="getStaffData" class="btn btn-primary">Get StaffData</button>
+	<button @onclick="clearList" class="btn btn-primary">Clear Data</button>
+</p>
+
+<p>Page results: @result</p>
+
+@if (staffList != null)
+{
+<label class="card-header"> There are @staffList.Count staff record(s) retrieved.</label>
+	<ul>
+		
+		@foreach (var staff in staffList)
+		{
+			<li class="row-cols-1">@staff.FirstName, @staff.LastName, @staff.Email, @staff.EnrolledDate</li>
+		}
+	</ul>
+}
+else
+{
+	<p><em>Loading...</em></p>
+}
+
+<form Model="Staff" class="form-label">
+	<h3>Input New Staff Data:</h3>
+	<p class="row">
+		<d>
+			<label>Name:</label>
+			<input @bind-value="newStaff.FirstName" />
+			<label>Last Name: </label>
+			<input @bind-value="newStaff.LastName" />
+		</d>
+		<d>
+			Email: <input @bind-value="newStaff.Email" />
+		</d>
+		<d>
+			Enrolled Date:<InputDate TValue="DateTime" @bind-Value="newStaff.EnrolledDate" Placeholder="@DateTime.Today"/>
+		</d>
+		<d>
+			Active: <InputCheckbox @bind-Value="newStaff.Active" />
+		</d>
+		<d>
+			Bank Account: <input @bind-value="newStaff.BankAccount" />
+		</d>
+	</p>
+
+</form>
+
+<p>
+	NewStaff:
+	@newStaff.FirstName, @newStaff.LastName, @newStaff.Email, @newStaff.EnrolledDate
+</p>
+
+
+@code{
+	private int counter = 0;
+	private string result = "result";
+	private List<Staff> staffList = new List<Staff>();
+
+	private Staff newStaff = new Staff();
+
+	private async Task getStaffData()
+	{
+		try{
+			var response = await Http.GetAsync("staffGet");
+			if (response.IsSuccessStatusCode)
+			{
+				staffList = await response.Content.ReadFromJsonAsync<List<Staff>>();
+				result = "Data Loaded";
+			}
+			else
+			{
+				result = "Error fetching data";
+			}
+		}
+		catch (Exception )
+		{
+			result = "Unable to load data";
+		}
+	} 
+
+	private void insertNewStaff()
+	{
+		
+	}
+
+	private void countUp()
+	{
+		counter++;
+		Console.WriteLine("getStaffData");
+	}
+	private void clearList(MouseEventArgs e)
+	{
+		staffList = new();
+		result = "Data cleared";
+	}
+}

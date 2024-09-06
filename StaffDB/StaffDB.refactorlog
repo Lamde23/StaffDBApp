@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="e5df02bd-5f83-4eff-ae6f-d712b35f46e7" ChangeDateTime="08/26/2024 02:19:46">
+    <Property Name="ElementName" Value="[dbo].[Payment].[Date From]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Payment]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DateFrom" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eb19aad0-00a2-485d-b231-ee395f4eeb8a" ChangeDateTime="08/26/2024 02:19:49">
+    <Property Name="ElementName" Value="[dbo].[Payment].[Date To]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Payment]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DateTo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="49f37671-8c7a-49bf-8417-39a73fcd5a4d" ChangeDateTime="08/26/2024 02:19:58">
+    <Property Name="ElementName" Value="[dbo].[Payment].[Bank Processed]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Payment]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BankProcessed" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f707ef07-8701-4011-b5ac-525751e9a570" ChangeDateTime="08/26/2024 02:20:03">
+    <Property Name="ElementName" Value="[dbo].[Payment].[Date Paid]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Payment]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DatePaid" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="287417ad-70aa-48ae-b512-0ff7ceeb141a" ChangeDateTime="08/26/2024 02:20:07">
+    <Property Name="ElementName" Value="[dbo].[Staff].[First Name]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Staff]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="FirstName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b679a305-1175-4820-94e0-9a9b40f7d0a8" ChangeDateTime="08/26/2024 02:20:09">
+    <Property Name="ElementName" Value="[dbo].[Staff].[Last Name]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Staff]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LastName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="77c0703f-9d77-41ec-853b-206eb3f9292c" ChangeDateTime="08/26/2024 02:20:19">
+    <Property Name="ElementName" Value="[dbo].[Staff].[Date Enrolled]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Staff]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="EnrolledDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5e9da1b1-4a83-42c2-b293-cebbce48c4fc" ChangeDateTime="08/26/2024 02:20:20">
+    <Property Name="ElementName" Value="[dbo].[Staff].[Bank Account]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Staff]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="BankAccount" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ef66b8ea-2209-4bb0-98db-eac041e7c56f" ChangeDateTime="08/29/2024 05:30:32">
+    <Property Name="ElementName" Value="[dbo].[Staff].[isActive]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Staff]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Active" />
+  </Operation>
+</Operations>

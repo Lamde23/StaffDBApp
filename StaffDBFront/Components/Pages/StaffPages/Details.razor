@@ -1,0 +1,56 @@
+﻿@page "/staff/details"
+
+@using Microsoft.EntityFrameworkCore
+@using StaffDBFront.Models
+@inject IDbContextFactory<StaffDBFront.Data.StaffDBContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Staff Details</PageTitle>
+
+<h1>Staff Details</h1>
+<div>
+    <h4>Staff Details</h4>
+    <hr />
+    @if (staff is null)
+    {
+        <p><em>Loading Staff...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">FirstName</dt>
+            <dd class="col-sm-10">@staff.FirstName</dd>
+            <dt class="col-sm-2">LastName</dt>
+            <dd class="col-sm-10">@staff.LastName</dd>
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@staff.Email</dd>
+            <dt class="col-sm-2">EnrolledDate</dt>
+            <dd class="col-sm-10">@staff.EnrolledDate</dd>
+            <dt class="col-sm-2">Active</dt>
+            <dd class="col-sm-10">@staff.Active</dd>
+            <dt class="col-sm-2">BankAccount</dt>
+            <dd class="col-sm-10">@staff.BankAccount</dd>
+        </dl>
+        <div>
+            <a href="@($"/staff/edit?id={staff.Id}")">Edit</a> |
+            <a href="@($"/staff")" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Staff? staff;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        staff = await context.Staff.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (staff is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

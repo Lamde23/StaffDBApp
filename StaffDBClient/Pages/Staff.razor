@@ -1,0 +1,34 @@
+﻿@page "/staff"
+@using StaffDBClient.Models
+@inject HttpClient _Http
+
+<PageTitle>Staff</PageTitle>
+
+<button @onclick="FetchStaffData"> Retreive Staff</button>
+
+@foreach(StaffModel staff in staffList)
+{
+	<p>@staff.firstName, @staff.lastName </p>
+
+}
+
+@code {
+	public List<StaffModel> staffList;
+
+	public async Task FetchStaffData()
+	{
+		try{
+			staffList = await _Http.GetFromJsonAsync<List<StaffModel>>("staffGet");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"An error occurred while fetching staff data: {ex.Message}");
+		}
+	}
+
+
+	// protected override async Task OnInitializedAsync()
+	// {
+	// 	await FetchStaffData();
+	// }
+}
