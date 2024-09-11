@@ -2,7 +2,6 @@
 @inject HttpClient Http
 @rendermode InteractiveServer
 
-
 <PageTitle>Home</PageTitle>
 
 <h1>Please use the side nav-buttons to view projects</h1>
@@ -14,9 +13,13 @@
 
 <p>Page results: @result</p>
 
-@if (staffList != null)
+@if (isLoading)
 {
-<label class="card-header"> There are @staffList.Count staff record(s) retrieved.</label>
+	<label>Loading staff data, please wait...</label>
+} 
+else if (staffList != null && staffList.Count > 0)
+{
+<label class="card-header">@staffList.Count staff record(s) retrieved.</label>
 	<ul>
 		
 		@foreach (var staff in staffList)
@@ -25,51 +28,54 @@
 		}
 	</ul>
 }
-else
-{
-	<p><em>Loading staff data, please wait...</em></p>
-}
 
-<form Model="Staff" class="form-label">
-	<h3>Input New Staff Data:</h3>
-	<p class="row">
-		<d>
-			<label>Name:</label>
-			<input @bind-value="newStaff.FirstName" />
-			<label>Last Name: </label>
-			<input @bind-value="newStaff.LastName" />
-		</d>
-		<d>
-			Email: <input @bind-value="newStaff.Email" />
-		</d>
-		<d>
-			Enrolled Date:<InputDate TValue="DateTime" @bind-Value="newStaff.EnrolledDate" Placeholder="@DateTime.Today"/>
-		</d>
-		<d>
-			Active: <InputCheckbox @bind-Value="newStaff.Active" />
-		</d>
-		<d>
-			Bank Account: <input @bind-value="newStaff.BankAccount" />
-		</d>
-	</p>
-
-</form>
-
-<p>
-	NewStaff:
-	@newStaff.FirstName, @newStaff.LastName, @newStaff.Email, @newStaff.EnrolledDate
-</p>
-
+<div class="col-12 col-md-8 p-4">
+	<EditForm Model="newStaff" FormName="newStaffForm" OnValidSubmit="insertNewStaff">
+		<h3>Input New Staff Data:</h3>
+		<DataAnnotationsValidator/>	
+		<ValidationSummary/> 
+		<div class="row">
+			<div>
+				<label class="form-label" for="FirstName"> Name:</label>
+				<input @bind="newStaff.FirstName" class="form-control"/>
+				<ValidationMessage For="@(() => newStaff.FirstName)" />
+				Last Name:
+				<input @bind="newStaff.LastName" class="form-control" />
+				<ValidationMessage For="@(() => newStaff.LastName)" />
+			</div>
+			<div>
+				Email: 
+				<input @bind="newStaff.Email" class="form-control" />
+				<ValidationMessage For="@(() => newStaff.Email)" />
+			</div>
+			<div>
+				Enrolled Date:
+				<InputDate TValue="DateTime" @bind-Value="newStaff.EnrolledDate" />
+			</div>
+			<div>
+				Active: 
+				<InputCheckbox @bind-Value="newStaff.Active" />
+			</div>
+			<div>
+				Bank Account: 
+				<input @bind="newStaff.BankAccount" />
+				<ValidationMessage For="@(() => newStaff.BankAccount)" />
+			</div>
+		</div>
+	
+		<button type="Submit" class="btn btn-primary">Add Staff</button>
+	</EditForm>
+</div>
 
 @code{
-	private int counter = 0;
 	private string result = "result";
 	private List<Staff> staffList = new List<Staff>();
-
 	private Staff newStaff = new Staff();
-
+	private bool isLoading = false;
+	
 	private async Task getStaffData()
 	{
+		isLoading = true;
 		try{
 			var response = await Http.GetAsync("staffGet");
 			if (response.IsSuccessStatusCode)
@@ -79,25 +85,41 @@ else
 			}
 			else
 			{
-				result = "Error fetching data";
+				result = "Error connecting to data API";
 			}
 		}
-		catch (Exception )
+		catch (Exception)
 		{
 			result = "Unable to load data";
 		}
+		isLoading = false;
 	} 
 
-	private void insertNewStaff()
+	private async void insertNewStaff()
 	{
-		
+		try
+		{
+			var response = await Http.PostAsJsonAsync("staffInsert", newStaff);
+			if (response.IsSuccessStatusCode)
+			{
+				result = "Staff Added";
+				newStaff = new Staff();
+				StateHasChanged();
+			}
+			else
+			{
+				result = "Error Adding Staff to insert API";
+				StateHasChanged();
+			}
+		}
+		catch (Exception)
+		{
+			result = "Failed to add new staff";		
+			StateHasChanged();
+		}
+
 	}
 
-	private void countUp()
-	{
-		counter++;
-		Console.WriteLine("getStaffData");
-	}
 	private void clearList(MouseEventArgs e)
 	{
 		staffList = new();
