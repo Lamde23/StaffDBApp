@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.QuickGrid
 @inject HttpClient Http
 @rendermode InteractiveServer
 
@@ -11,68 +12,77 @@
 	<button @onclick="clearList" class="btn btn-primary">Clear Data</button>
 </p>
 
-<p>Page results: @result</p>
+<div class="page-size-chooser">
+	Items per page:
+	<select @bind="@pagination.ItemsPerPage">
+		<option>8</option>
+		<option>10</option>
+		<option>20</option>
+	</select>
+</div>
+<QuickGrid Items="@staffListQueryable" Class="grid" Pagination="@pagination">
+	<PropertyColumn Property="staff => staff.FirstName" Title="First Name" Sortable="true"/>
+	<PropertyColumn Property="staff => staff.LastName" Title="Last Name" Sortable="true" />
+	<PropertyColumn Property="staff => staff.Email" Title="Email" Sortable="true" />
+	<PropertyColumn Property="staff => staff.EnrolledDate.ToShortDateString()" Title="Enrolled Date" Sortable="true" />
+	<PropertyColumn Property="staff => staff.Active" />
+	<PropertyColumn Property="staff => staff.BankAccount" Title="Bank Account" />
 
-@if (isLoading)
-{
-	<label>Loading staff data, please wait...</label>
-} 
-else if (staffList != null && staffList.Count > 0)
-{
-<label class="card-header">@staffList.Count staff record(s) retrieved.</label>
-	<ul>
-		
-		@foreach (var staff in staffList)
-		{
-			<li class="row-cols-1">@staff.FirstName, @staff.LastName, @staff.Email, @staff.EnrolledDate</li>
-		}
-	</ul>
-}
+	<TemplateColumn Context="staff">
+		<a class="btn btn-info">Payments</a> |
+		<a class="btn btn-info">Edit</a> |
+		<a class="btn btn-danger">Delete</a>
+	</TemplateColumn>
+</QuickGrid>
+<Paginator State="@pagination" />
 
 <div class="col-12 col-md-8 p-4">
-	<EditForm Model="newStaff" FormName="newStaffForm" OnValidSubmit="insertNewStaff">
-		<h3>Input New Staff Data:</h3>
-		<DataAnnotationsValidator/>	
-		<ValidationSummary/> 
-		<div class="row">
-			<div>
-				<label class="form-label" for="FirstName"> Name:</label>
-				<input @bind="newStaff.FirstName" class="form-control"/>
-				<ValidationMessage For="@(() => newStaff.FirstName)" />
-				Last Name:
-				<input @bind="newStaff.LastName" class="form-control" />
-				<ValidationMessage For="@(() => newStaff.LastName)" />
-			</div>
-			<div>
-				Email: 
-				<input @bind="newStaff.Email" class="form-control" />
-				<ValidationMessage For="@(() => newStaff.Email)" />
-			</div>
-			<div>
-				Enrolled Date:
-				<InputDate TValue="DateTime" @bind-Value="newStaff.EnrolledDate" />
-			</div>
-			<div>
-				Active: 
-				<InputCheckbox @bind-Value="newStaff.Active" />
-			</div>
-			<div>
-				Bank Account: 
-				<input @bind="newStaff.BankAccount" />
-				<ValidationMessage For="@(() => newStaff.BankAccount)" />
-			</div>
-		</div>
+	<div class="row">
+		<EditForm Model="newStaff" FormName="newStaffForm" OnValidSubmit="insertNewStaff" class="card-header">
+			<h3>Input New Staff Data:</h3>
+			<DataAnnotationsValidator/>	
+			<ValidationSummary/> 
+				<div>
+					Name:
+					<input @bind="newStaff.FirstName" class="form-control"/>
+					<ValidationMessage For="@(() => newStaff.FirstName)" />
+					Last Name:
+				</div>
+				<div>
+					<input @bind="newStaff.LastName" class="form-control" />
+					<ValidationMessage For="@(() => newStaff.LastName)" />
+				</div>
+				<div>
+					Email: 
+					<input @bind="newStaff.Email" class="form-control" />
+					<ValidationMessage For="@(() => newStaff.Email)" />
+				</div>
+				<div>
+					Enrolled Date:
+					<InputDate TValue="DateTime" @bind-Value="newStaff.EnrolledDate" />
+				</div>
+				<div>
+					Active: 
+					<InputCheckbox @bind-Value="newStaff.Active" />
+				</div>
+				<div>
+					Bank Account: 
+					<input @bind="newStaff.BankAccount" />
+					<ValidationMessage For="@(() => newStaff.BankAccount)" />
+				</div>
 	
-		<button type="Submit" class="btn btn-primary">Add Staff</button>
-	</EditForm>
+			<button type="Submit" class="btn btn-primary">Add Staff</button>
+		</EditForm>
+	</div>
 </div>
 
 @code{
-	private string result = "result";
 	private List<Staff> staffList = new List<Staff>();
 	private Staff newStaff = new Staff();
 	private bool isLoading = false;
-	
+	IQueryable<Staff> staffListQueryable = Enumerable.Empty<Staff>().AsQueryable();
+	PaginationState pagination = new PaginationState { ItemsPerPage = 8 };
+
 	private async Task getStaffData()
 	{
 		isLoading = true;
@@ -80,49 +90,33 @@ else if (staffList != null && staffList.Count > 0)
 			var response = await Http.GetAsync("staffGet");
 			if (response.IsSuccessStatusCode)
 			{
-				staffList = await response.Content.ReadFromJsonAsync<List<Staff>>();
-				result = "Data Loaded";
-			}
-			else
-			{
-				result = "Error connecting to data API";
-			}
-		}
-		catch (Exception)
-		{
-			result = "Unable to load data";
-		}
-		isLoading = false;
-	} 
+				var staffDataResponse = await response.Content.ReadFromJsonAsync<List<Staff>>();
+				staffList = staffDataResponse ?? new List<Staff>();
+				staffListQueryable = staffList.AsQueryable();
 
-	private async void insertNewStaff()
-	{
-		try
-		{
-			var response = await Http.PostAsJsonAsync("staffInsert", newStaff);
-			if (response.IsSuccessStatusCode)
-			{
-				result = "Staff Added";
-				newStaff = new Staff();
-				StateHasChanged();
-			}
-			else
-			{
-				result = "Error Adding Staff to insert API";
-				StateHasChanged();
-			}
-		}
-		catch (Exception)
-		{
-			result = "Failed to add new staff";		
-			StateHasChanged();
-		}
+            }
+        }
+        catch (Exception){ }
+        isLoading = false;
+    } 
 
-	}
+    private async Task insertNewStaff()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("staffInsert", newStaff);
+            if (response.IsSuccessStatusCode)
+            {
+                newStaff = new Staff();
+				await getStaffData();
+            }
+        }
+        catch (Exception) { }
+    }
 
 	private void clearList(MouseEventArgs e)
 	{
 		staffList = new();
-		result = "Data cleared";
+		staffListQueryable = Enumerable.Empty<Staff>().AsQueryable();
 	}
 }
